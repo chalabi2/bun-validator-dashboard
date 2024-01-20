@@ -10,7 +10,7 @@ module.exports = {
         },
         gray: {
           bg: "#3d494c",
-          lightbg: "#9ecbd4",
+          lightbg: "#c4cfd2",
           bglighthover: "#c5e0e8",
           bgdarkhover: "#2c3a3d",
         },

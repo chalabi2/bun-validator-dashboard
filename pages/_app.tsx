@@ -14,6 +14,9 @@ import { chains, assets } from "chain-registry";
 import "@interchain-ui/react/styles";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
+import ChainSelector from "../components/react/chain-selector";
+import { ChainNameProvider } from "../contexts/chainName";
 
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
   // const signerOptions: SignerOptions = {
@@ -93,9 +96,11 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={true} />
-          <div className="min-h-screen text-black bg-gray-lightbg dark:bg-gray-bg dark:text-white">
-            <Component {...pageProps} />
-          </div>
+          <ChainNameProvider>
+            <div className="min-h-screen text-black bg-gray-lightbg dark:bg-gray-bg dark:text-white">
+              <Component {...pageProps} />
+            </div>
+          </ChainNameProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </ChainProvider>

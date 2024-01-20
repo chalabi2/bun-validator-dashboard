@@ -1,12 +1,15 @@
 import Head from "next/head";
 import { WalletSection } from "../components";
+import { chains } from "chain-registry";
 
 import { useTheme } from "../contexts/theme";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { useValidatorsQuery } from "../query/useQueries";
+import { useChainName } from "../contexts/chainName";
+import ChainSelector from "../components/react/chain-selector";
 
 export default function Home() {
-  const chainName = process.env.NEXT_PUBLIC_CHAIN ?? "stargaze";
+  const { chainName } = useChainName();
   const { theme, toggleTheme } = useTheme();
   const { validatorsData, isError, isLoading } = useValidatorsQuery(chainName);
 
@@ -18,17 +21,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-row justify-end mb-4 gap-4 my-auto">
+        <WalletSection chainName={chainName} />
+        <ChainSelector chains={chains} />
         <button
-          className="inline-flex items-center justify-center w-12 h-11 text-black border rounded-lg dark:text-white hover:bg-black/10 dark:hover:bg-white/10 border-black/10 dark:border-white/10"
+          className="inline-flex items-center justify-center w-12 h-11 border rounded-lg hover:bg-black/10 dark:hover:bg-white/10 border-black/10 dark:border-white/10"
           onClick={toggleTheme}
         >
           {theme === "light" ? (
-            <MoonIcon className="w-5 h-5" />
+            <MoonIcon className=" text-black w-5 h-5" />
           ) : (
-            <SunIcon className="w-6 h-6" />
+            <SunIcon className=" text-white  w-6 h-6" />
           )}
         </button>
-        <WalletSection chainName={chainName} />
       </div>
     </div>
   );
