@@ -31,13 +31,14 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ chains }) => {
     (chain) => chain.chain_name === selectedChain
   );
 
-  const fixedWidth = "w-[200px]";
+  const fixedWidth = "w-[240px]";
+  const maxFixedWidth = "max-w-[240px]";
 
   return (
     <div className="relative inline-block text-left">
       <button
         type="button"
-        className={`rounded-lg bg-gray-bg dark:bg-gray-lightbg ${fixedWidth} max-w-[280px] w-auto px-6 hover:bg-gray-bgdarkhover dark:hover:bg-gray-bglighthover inline-flex justify-center items-center py-2.5 font-medium text-white dark:text-black truncate`}
+        className={`rounded-lg bg-gray-bg dark:bg-gray-lightbg ${fixedWidth} ${maxFixedWidth} w-auto px-6 hover:bg-gray-bgdarkhover dark:hover:bg-gray-bglighthover inline-flex justify-center items-center py-2.5 font-medium text-white dark:text-black truncate`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedChain && selectedChainDetails?.logo_URIs?.png && (
@@ -55,7 +56,7 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ chains }) => {
 
       {isOpen && (
         <div
-          className={`absolute right-0 ${fixedWidth} max-w-[280px] mt-2 origin-top-right text-white dark:text-black bg-gray-bg dark:bg-gray-lightbg divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-y-auto max-h-60 z-10`}
+          className={`absolute right-0 ${fixedWidth} ${maxFixedWidth} mt-2 origin-top-right text-white dark:text-black bg-gray-bg dark:bg-gray-lightbg divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-y-auto max-h-60 z-10`}
         >
           <input
             type="text"

@@ -9,7 +9,7 @@ module.exports = {
           damp: "#6674D9",
         },
         gray: {
-          bg: "#3d494c",
+          bg: "#35394a",
           lightbg: "#c4cfd2",
           bglighthover: "#c5e0e8",
           bgdarkhover: "#2c3a3d",
