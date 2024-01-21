@@ -83,7 +83,7 @@ export const WalletSection: React.FC<WalletComponentProps> = ({
 
   return (
     <button
-      className="rounded-lg bg-gray-bg dark:bg-gray-lightbg min-w-[140px] max-w-[280px] w-auto px-6 hover:bg-gray-bgdarkhover dark:hover:bg-gray-bglighthover inline-flex justify-center items-center py-2.5 font-medium text-white dark:text-black truncate"
+      className="rounded-lg bg-accent-light  hover:bg-accent-lightHover  min-w-[140px] max-w-[280px] w-auto px-6  dark:hover:bg-gray-bglighthover inline-flex justify-center items-center py-2.5 font-medium text-white  truncate"
       onClick={onClick}
     >
       {buttonIcon}

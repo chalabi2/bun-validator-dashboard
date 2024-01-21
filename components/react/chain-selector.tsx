@@ -3,11 +3,7 @@ import { Chain } from "@chain-registry/types";
 import { useChainName } from "../../contexts/chainName";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-interface ChainSelectorProps {
-  chains: Chain[];
-}
-
-const ChainSelector: React.FC<ChainSelectorProps> = ({ chains }) => {
+const ChainSelector: React.FC<{ chains: Chain[] }> = ({ chains }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedChain, setSelectedChain] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,14 +27,15 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ chains }) => {
     (chain) => chain.chain_name === selectedChain
   );
 
-  const fixedWidth = "w-[240px]";
-  const maxFixedWidth = "max-w-[240px]";
+  const fixedWidth = "w-[200px]";
+  const maxFixedWidth = "max-w-[200px]";
+  const minFixedWidth = "min-w-[200px]";
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left z-50">
       <button
         type="button"
-        className={`rounded-lg bg-gray-bg dark:bg-gray-lightbg ${fixedWidth} ${maxFixedWidth} w-auto px-6 hover:bg-gray-bgdarkhover dark:hover:bg-gray-bglighthover inline-flex justify-center items-center py-2.5 font-medium text-white dark:text-black truncate`}
+        className={`rounded-lg bg-accent-light  hover:bg-accent-lightHover ${fixedWidth} ${minFixedWidth} ${maxFixedWidth} w-auto px-6  inline-flex justify-center items-center py-2.5 font-medium text-white truncate`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedChain && selectedChainDetails?.logo_URIs?.png && (
@@ -56,20 +53,20 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ chains }) => {
 
       {isOpen && (
         <div
-          className={`absolute right-0 ${fixedWidth} ${maxFixedWidth} mt-2 origin-top-right text-white dark:text-black bg-gray-bg dark:bg-gray-lightbg divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-y-auto max-h-60 z-10`}
+          className={`absolute right-0 ${fixedWidth} ${maxFixedWidth} ${minFixedWidth} mt-2 origin-top-right  bg-gray-bg dark:bg-gray-lightbg divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-y-auto max-h-60 z-50`}
         >
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 text-white dark:text-black placeholder-gray-500 focus:outline-none border-none"
+            className="w-full px-4 py-2 text-black dark:text-white placeholder-gray-500 focus:outline-none border-none"
             placeholder="Search Chain"
           />
-          <div className="py-1">
+          <div className="relative py-1 z-50">
             {filteredChains.map((chain) => (
               <a
                 key={chain.chain_name}
-                className="flex items-center px-4 py-2 text-sm text-white dark:text-black hover:bg-gray-100 hover:text-gray-900"
+                className="flex z-50 items-center px-4 py-2 text-sm text-black dark:text-white hover:text-white hover:bg-accent-light dark:hover:bg-accent-dark  cursor-pointer "
                 onClick={() => handleChainSelect(chain.chain_name)}
               >
                 {chain.logo_URIs?.png && (

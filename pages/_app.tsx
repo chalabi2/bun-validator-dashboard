@@ -16,8 +16,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { ChainNameProvider } from "../contexts/chainName";
-import Header from "../components/react/header";
-import Example from "../components/react/sidebar-header";
+
+import { Layout } from "../components/react/sidebar-header";
 
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
   // const signerOptions: SignerOptions = {
@@ -37,7 +37,6 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
 
   function isWalletClientAvailable(walletName: string) {
     if (typeof window === "undefined") {
-      // We're on the server, return false or handle accordingly
       return false;
     }
 
@@ -98,10 +97,10 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={true} />
           <ChainNameProvider>
-            <div className="min-h-screen text-black bg-gray-bg dark:bg-[#333640] dark:text-white">
-              <Example />
-
-              <Component {...pageProps} />
+            <div className="min-h-screen text-black bg-gray-50 dark:bg-gray-900 dark:text-white">
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
             </div>
           </ChainNameProvider>
         </QueryClientProvider>

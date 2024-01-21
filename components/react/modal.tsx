@@ -186,7 +186,7 @@ export const TailwindModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+          <div className="fixed inset-0 transition-opacity bg-black dark:bg-gray-500 bg-opacity-25" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -200,7 +200,7 @@ export const TailwindModal = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-xl  text-black bg-gray-lightbg dark:bg-gray-bg dark:text-white px-4 pt-2.5 pb-4 [min-height:18rem] text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xs sm:p-4">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-gray-100  dark:bg-gray-900 text-black dark:text-white px-4 pt-2.5 pb-4 [min-height:18rem] text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xs sm:p-4">
                 <div className="h-full">{_render}</div>
               </Dialog.Panel>
             </Transition.Child>

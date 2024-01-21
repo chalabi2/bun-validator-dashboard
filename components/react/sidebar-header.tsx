@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -18,19 +18,10 @@ import { WalletSection } from "../wallet";
 import ChainSelector from "./chain-selector";
 import { useChainName } from "../../contexts/chainName";
 import { useTheme } from "../../contexts/theme";
+import router, { useRouter } from "next/router";
 
-const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-  { name: "Distribution", href: "#", icon: BanknotesIcon, current: false },
-  { name: "Slashing", href: "#", icon: XCircleIcon, current: false },
-  { name: "Governance", href: "#", icon: ScaleIcon, current: false },
-  { name: "Monitor", href: "#", icon: SquaresPlusIcon, current: false },
-];
-const teams = [
-  { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
-  { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
-  { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
-];
+const isClient = typeof window === "object";
+
 const userNavigation = [
   { name: "Your profile", href: "#" },
   { name: "Sign out", href: "#" },
@@ -40,10 +31,45 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { chainName } = useChainName();
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  const [currentPath, setCurrentPath] = useState(router.pathname);
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      setCurrentPath(url);
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router]);
+
+  const navigation = [
+    {
+      name: "Dashboard",
+      href: "/",
+      icon: HomeIcon,
+      current: currentPath === "/",
+    },
+    {
+      name: "Distribution",
+      href: "/distribution",
+      icon: BanknotesIcon,
+      current: currentPath === "/distribution",
+    },
+    { name: "Slashing", href: "slashing", icon: XCircleIcon, current: false },
+    { name: "Governance", href: "governance", icon: ScaleIcon, current: false },
+    { name: "Monitor", href: "monitor", icon: SquaresPlusIcon, current: false },
+  ];
 
   return (
     <>
@@ -65,7 +91,6 @@ export default function Example() {
             >
               <div className="fixed inset-0 bg-gray-900/80" />
             </Transition.Child>
-
             <div className="fixed inset-0 flex">
               <Transition.Child
                 as={Fragment}
@@ -100,7 +125,6 @@ export default function Example() {
                       </button>
                     </div>
                   </Transition.Child>
-                  {/* Sidebar component, swap this element with another sidebar if you like */}
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-bg dark:bg-gray-lightbg px-6 pb-4">
                     <div className="flex h-16 shrink-0 items-center">
                       <img
@@ -139,7 +163,6 @@ export default function Example() {
                             ))}
                           </ul>
                         </li>
-
                         <li className="mt-auto">
                           <a
                             href="#"
@@ -159,8 +182,7 @@ export default function Example() {
 
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 lg:flex-col">
-          {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r bg-gray-bg dark:bg-gray-lightbg px-6 pb-4">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r  px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
                 className="h-16 w-auto"
@@ -178,16 +200,16 @@ export default function Example() {
                           href={item.href}
                           className={classNames(
                             item.current
-                              ? "bg-[#5a5f71] text-white dark:text-black"
-                              : "text-white dark:text-black hover:text-white hover:bg-[#5a5f71]",
+                              ? "bg-accent-light dark:bg-accent-dark text-white"
+                              : "text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
                           <item.icon
                             className={classNames(
                               item.current
-                                ? "text-white dark:text-black"
-                                : "text-white dark:text-black group-hover:text-white",
+                                ? "text-white"
+                                : "text-gray-500 dark:text-gray-400 group-hover:text-gray-600",
                               "h-6 w-6 shrink-0"
                             )}
                             aria-hidden="true"
@@ -202,7 +224,7 @@ export default function Example() {
                 <li className="mt-auto">
                   <a
                     href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-white hover:bg-[#5a5f71] hover:text-white"
+                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
                   >
                     Chandra Station
                   </a>
@@ -212,33 +234,36 @@ export default function Example() {
           </div>
         </div>
 
-        <div className="lg:pl-56">
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-[#5a5f71] dark:bg-gray-bglighthover px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="fixed w-screen lg:pl-56">
+          <div className="top-0 z-50 flex h-16 shrink-0 items-center gap-x-4 border-b  bg-gray-100 dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
             <button
               type="button"
-              className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+              className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300 lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <span className="sr-only">Open sidebar</span>
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
+            <h1 className="hidden md:block lg:block truncate text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Validator Dashboard
+            </h1>
 
             {/* Separator */}
             <div
               className="h-6 w-px bg-gray-900/10 lg:hidden"
               aria-hidden="true"
             />
-            <div className="flex items-center gap-4 ml-auto">
+            <div className="flex relative items-center z-50 gap-4 ml-auto">
               <ChainSelector chains={chains} />
               <WalletSection chainName={chainName} />
               <button
-                className="inline-flex items-center justify-center w-12 h-11 border rounded-lg hover:bg-gray-bgdarkhover dark:hover:bg-gray-bglighthover bg-gray-bg dark:bg-gray-lightbg border-black/10 dark:border-white/10"
+                className="inline-flex items-center justify-center w-12 h-11  rounded-lg bg-accent-light hover:bg-accent-lightHover "
                 onClick={toggleTheme}
               >
                 {theme === "light" ? (
                   <MoonIcon className="w-6 h-6 text-white" />
                 ) : (
-                  <SunIcon className="w-6 h-6 text-black" />
+                  <SunIcon className="w-6 h-6 text-white" />
                 )}
               </button>
             </div>
@@ -256,15 +281,15 @@ export default function Example() {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                  <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-black/10 focus:outline-none">
                     {userNavigation.map((item) => (
                       <Menu.Item key={item.name}>
                         {({ active }) => (
                           <a
                             href={item.href}
                             className={classNames(
-                              active ? "bg-gray-50" : "",
-                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                              active ? "bg-gray-100 dark:bg-gray-600" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-200"
                             )}
                           >
                             {item.name}
@@ -279,10 +304,10 @@ export default function Example() {
           </div>
         </div>
 
-        <main className="py-10">
-          <div className="px-4 sm:px-6 lg:px-8"></div>
+        <main className="lg:pl-56 mx-auto my-auto py-24">
+          <div className="px-4 sm:px-6 mt-32 lg:px-8">{children}</div>
         </main>
       </div>
     </>
   );
-}
+};
