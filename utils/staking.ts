@@ -67,7 +67,7 @@ export const parseValidators = (validators: Validator[]) => {
       return [];
     }
   return validators.map((validator) => {
-    const commissionRate = validator.commission?.commissionRates?.rate || ZERO;
+    const commissionRate = validator.commission?.commission_rates?.rate || ZERO;
     const commissionPercentage = parseFloat(commissionRate) * 100;
 
     const valconsPrefix = extractValconsPrefix(validator.operator_address);
@@ -82,6 +82,8 @@ export const parseValidators = (validators: Validator[]) => {
       address: validator.operator_address || '',
       commission: commissionPercentage.toFixed() + '%',
       votingPower: toNumber(shiftDigits(validator.tokens, -6, 0), 0),
+      securityContact: validator.description?.security_contact || '',
+      website: validator.description?.website || '',
     };
   });
 };

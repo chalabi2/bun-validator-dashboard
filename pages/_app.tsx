@@ -25,9 +25,7 @@ import { Layout } from "../components/react/sidebar-header";
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
   const signerOptions: SignerOptions = {
     //@ts-ignore
-    signingStargate: (
-      chain: Chain
-    ): SigningStargateClientOptions | undefined => {
+    signingStargate: (): SigningStargateClientOptions | undefined => {
       //@ts-ignore
       const mergedRegistry = new Registry([...cosmosProtoRegistry]);
 

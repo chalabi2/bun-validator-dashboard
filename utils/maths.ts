@@ -54,3 +54,9 @@ export function abbreviateNumber(value: number): string {
 
   return newValue + suffixes[suffixNum];
 }
+
+export const camelCaseToWords = (str: string) => {
+  return str
+    .replace(/([A-Z])/g, ' $1') // insert a space before all caps
+    .replace(/^./, (match: string) => match.toUpperCase()); // capitalize the first letter
+};

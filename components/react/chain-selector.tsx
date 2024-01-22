@@ -32,7 +32,7 @@ const ChainSelector: React.FC<{ chains: Chain[] }> = ({ chains }) => {
   const minFixedWidth = "min-w-[200px]";
 
   return (
-    <div className="relative inline-block text-left z-50">
+    <div className="relative inline-block text-left z-1">
       <button
         type="button"
         className={`rounded-lg bg-accent-light  hover:bg-accent-lightHover ${fixedWidth} ${minFixedWidth} ${maxFixedWidth} w-auto px-6  inline-flex justify-center items-center py-2.5 font-medium text-white truncate`}
@@ -53,7 +53,7 @@ const ChainSelector: React.FC<{ chains: Chain[] }> = ({ chains }) => {
 
       {isOpen && (
         <div
-          className={`absolute right-0 ${fixedWidth} ${maxFixedWidth} ${minFixedWidth} mt-2 origin-top-right  bg-gray-bg dark:bg-gray-lightbg divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-y-auto max-h-60 z-50`}
+          className={`absolute right-0 ${fixedWidth} ${maxFixedWidth} ${minFixedWidth} mt-2 origin-top-right  bg-gray-50 dark:bg-gray-900 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-y-auto max-h-60 z-50`}
         >
           <input
             type="text"

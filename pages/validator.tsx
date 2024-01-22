@@ -8,42 +8,28 @@ import { assets, chains } from "chain-registry";
 import { shiftDigits } from "../utils/maths";
 import { StdFee } from "@cosmjs/stargate";
 import { useChain } from "@cosmos-kit/react";
+import { EditDetails } from "../components/validator/edit-details";
+import { useValidatorsQuery } from "../query/useQueries";
+import { fromBech32, toBech32 } from "@cosmjs/encoding";
+
+interface ValidatorDetails {
+  commissionRate: string;
+  moniker: string;
+  securityContact: string;
+  details: string;
+  identity: string;
+  website: string;
+}
 
 export default function Validator() {
-  const tabs = [
-    { name: "Commission", href: "#commission" },
-    { name: "Details", href: "#details" },
-    { name: "Slashing", href: "#slashing" },
-  ];
-
-  const [isSiging, setIsSigning] = useState<boolean>(false);
-
-  // State to track the current active tab based on the hash in the URL
-  const [currentTab, setCurrentTab] = useState(tabs[0].href);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentTab(window.location.hash || tabs[0].href);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(" ");
-  }
-
-  const handleTabClick = (href: string) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    setCurrentTab(href);
-    window.location.hash = href;
-  };
+  const [isSigingCommission, setIsSigningCommission] = useState<boolean>(false);
+  const [isSigingUnjail, setIsSigningUnjail] = useState<boolean>(false);
+  const [isSigingDetails, setIsSigningDetails] = useState<boolean>(false);
 
   const commissionStats = [
     { name: "Commission", stat: "71,897 $AKT" },
+    { name: "Commission Monthly Avg", stat: "2,000 $AKT" },
     { name: "Validator", stat: "Chandra Station" },
-    { name: "Monthly Avg", stat: "2,000 $AKT" },
   ];
 
   const slashingStats = [
@@ -53,7 +39,69 @@ export default function Validator() {
   ];
 
   const { chainName } = useChainName();
+
   const { address } = useChain(chainName);
+
+  function getValoperAddress(
+    address: string | undefined,
+    chainName: string | undefined
+  ): string | undefined {
+    if (!address) {
+      return undefined;
+    }
+    const { data } = fromBech32(address);
+
+    const chainInfo = chains.find(({ chain_name }) => chain_name === chainName);
+
+    if (!chainInfo) {
+      console.warn("Chain not found");
+      return undefined;
+    }
+
+    const bech32Prefix = chainInfo.bech32_prefix;
+    const valoperPrefix = bech32Prefix + "valoper";
+    return toBech32(valoperPrefix, data);
+  }
+
+  const [valoperAddress, setValoperAddress] = useState("");
+
+  useEffect(() => {
+    const updateValoperAddress = () => {
+      const newAddress = getValoperAddress(address, chainName);
+      setValoperAddress(newAddress || "");
+    };
+
+    updateValoperAddress();
+  }, [chainName, address]);
+
+  const { validatorsData, isError, isLoading } = useValidatorsQuery(chainName);
+
+  const [validatorDetails, setValidatorDetails] = useState<ValidatorDetails>({
+    commissionRate: "",
+    moniker: "",
+    securityContact: "",
+    details: "",
+    identity: "",
+    website: "",
+  });
+
+  useEffect(() => {
+    if (validatorsData && valoperAddress) {
+      const foundValidator = validatorsData.find(
+        (validator) => validator.address === valoperAddress
+      );
+      if (foundValidator) {
+        setValidatorDetails({
+          commissionRate: foundValidator.commission,
+          moniker: foundValidator.name,
+          securityContact: foundValidator.securityContact,
+          details: foundValidator.description,
+          identity: foundValidator.identity,
+          website: foundValidator.website,
+        });
+      }
+    }
+  }, [validatorsData, valoperAddress, chainName]);
 
   const { tx } = useTx(chainName);
 
@@ -81,10 +129,8 @@ export default function Validator() {
   const mainDenom = mainTokens?.assets[0].base ?? "";
   let feeAmount;
   if (chainName === "sommelier") {
-    // Hardcoded value for sommelier-3
     feeAmount = "10000";
   } else {
-    // Default case
     const fixedMinGasPrice =
       fees?.find(({ denom }) => denom === mainDenom)?.average_gas_price ?? "";
     feeAmount = shiftDigits(fixedMinGasPrice, 6).toString();
@@ -102,200 +148,50 @@ export default function Validator() {
 
   const handleCommissionClaim = async (event: React.MouseEvent) => {
     event.preventDefault();
-    setIsSigning(true);
+    setIsSigningCommission(true);
     try {
-      const result = await tx([msgClaimRewards], {
+      const result = await tx([msgClaimRewards, msgClaimCommission], {
         fee,
         onSuccess: () => {},
       });
     } catch (error) {
-      setIsSigning(false);
+      setIsSigningCommission(false);
       console.error("Transaction failed", error);
     } finally {
-      setIsSigning(false);
+      setIsSigningCommission(false);
+    }
+  };
+
+  const handleUnjail = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    setIsSigningUnjail(true);
+    try {
+      const result = await tx([msgUnjail], {
+        fee,
+        onSuccess: () => {},
+      });
+    } catch (error) {
+      setIsSigningUnjail(false);
+      console.error("Transaction failed", error);
+    } finally {
+      setIsSigningUnjail(false);
     }
   };
 
   return (
-    <div className="relative z-0 max-w-screen   px-10 mx-6 lg:mx-auto">
+    <div className="relative z-0 max-w-screen px-10 mx-6 lg:mx-auto">
       <Head>
         <title>Block Explorer</title>
         <meta name="description" content="Generated by create cosmos app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="mx-auto w-5/6 h-[800px] shadow-lg rounded-md">
-        <div>
-          <div className="sm:hidden">
-            <label htmlFor="tabs" className="sr-only">
-              Select a tab
-            </label>
-            <select
-              id="tabs"
-              name="tabs"
-              className="block w-full rounded-t-md border-gray-300 focus:border-accent-light dark:focus:border-accent-dark focus:ring-accent-light dark:focus:ring-accent-dark"
-              value={currentTab}
-              onChange={(e) => handleTabClick(e.target.value)}
-            >
-              {tabs.map((tab) => (
-                <option key={tab.name} value={tab.href}>
-                  {tab.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="hidden sm:block">
-            <nav
-              className="isolate flex divide-x divide-accent-light dark:divide-accent-dark rounded-t-md shadow"
-              aria-label="Tabs"
-            >
-              {tabs.map((tab, tabIdx) => (
-                <button
-                  key={tab.name}
-                  onClick={() => handleTabClick(tab.href)}
-                  className={classNames(
-                    currentTab === tab.href
-                      ? "text-gray-900 dark:text-gray-50"
-                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
-                    tabIdx === 0 ? "rounded-tl-md" : "",
-                    tabIdx === tabs.length - 1 ? "rounded-tr-md" : "",
-                    "group relative min-w-0 flex-1 overflow-hidden bg-gray-100 dark:bg-gray-700 py-4 px-4 text-center text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 focus:z-10"
-                  )}
-                  aria-current={currentTab === tab.href ? "page" : undefined}
-                >
-                  <span>{tab.name}</span>
-                  <span
-                    aria-hidden="true"
-                    className={classNames(
-                      currentTab === tab.href
-                        ? "bg-accent-light dark:bg-accent-dark"
-                        : "bg-transparent",
-                      "absolute inset-x-0 bottom-0 h-0.5"
-                    )}
-                  />
-                </button>
-              ))}
-            </nav>
-            <div className="p-4">
-              {currentTab === "#commission" && (
-                <div>
-                  <dl className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                    {commissionStats.map((item) => (
-                      <div
-                        key={item.name}
-                        className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
-                      >
-                        <dt className="truncate text-sm font-medium text-gray-500">
-                          {item.name}
-                        </dt>
-                        <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
-                          {item.stat}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <div className="flex justify-center mt-16">
-                    <button
-                      type="button"
-                      onClick={handleCommissionClaim}
-                      className="relative rounded-md bg-white px-3.5 py-2.5 max-w-[200px] min-w-[200px] text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-accent-light focus:border-accent-light hover:bg-gray-50 flex justify-center items-center"
-                    >
-                      <span className={`${isSiging ? "invisible" : "visible"}`}>
-                        Claim Commission
-                      </span>
-                      {isSiging && (
-                        <div className="absolute inset-0 flex justify-center items-center">
-                          <div className="animate-spin rounded-full h-6 w-6">
-                            <div className="w-full h-full rounded-full border-2 border-t-accent-light border-r-accent-light  border-l-accent-light"></div>
-                          </div>
-
-                          <span className="pl-2">Processing...</span>
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {currentTab === "#slashing" && (
-                <div>
-                  <dl className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                    {slashingStats.map((item) => (
-                      <div
-                        key={item.name}
-                        className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
-                      >
-                        <dt className="truncate text-sm font-medium text-gray-500">
-                          {item.name}
-                        </dt>
-                        <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
-                          {item.stat}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <div className="flex justify-center mt-16">
-                    <button
-                      type="button"
-                      className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-accent-light hover:bg-gray-50"
-                    >
-                      Unjail
-                    </button>
-                  </div>
-                </div>
-              )}
-              {currentTab === "#details" && (
-                <>
-                  <div className="isolate mt-12 mx-auto -space-y-px w-1/2 rounded-md shadow-sm">
-                    <div className="relative rounded-md rounded-b-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-600">
-                      <label className="block text-md font-medium text-gray-900">
-                        Moniker
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        className="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Chandra Station"
-                      />
-                    </div>
-                    <div className="relative rounded-md rounded-b-none rounded-t-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-600">
-                      <label className="block text-md font-medium text-gray-900">
-                        Description
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        className="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Validator of The Lunar God"
-                      />
-                    </div>
-                    <div className="relative rounded-md rounded-t-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-10 focus-within:ring-2 focus-within:ring-indigo-600">
-                      <label className="block text-md font-medium text-gray-900">
-                        Commission Rate
-                      </label>
-                      <input
-                        type="text"
-                        name="job-title"
-                        id="job-title"
-                        className="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 text-md focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="5%"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-center mt-8">
-                    <button
-                      type="button"
-                      className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-accent-light hover:bg-gray-50"
-                    >
-                      Update Details
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <EditDetails
+        validatorDetails={validatorDetails}
+        address={address ?? ""}
+        fee={fee}
+        chainName={chainName}
+        valoperAddress={valoperAddress}
+      />
     </div>
   );
 }

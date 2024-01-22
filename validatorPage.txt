@@ -1,0 +1,93 @@
+<div className="mx-auto w-5/6 bg-white h-[600px] shadow-lg rounded-md">
+        <div className="p-4">
+          <div>
+            {/* Wrapper div with grid-cols-3 */}
+
+            <div className="mt-12 grid grid-cols-3 gap-5">
+              {/* First Column */}
+              <dl className="w-full space-y-4 ">
+                {commissionStats.map((item) => (
+                  <div
+                    key={item.name}
+                    className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
+                  >
+                    <dt className="truncate text-sm font-medium text-gray-500">
+                      {item.name}
+                    </dt>
+                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+                      {item.stat}
+                    </dd>
+                  </div>
+                ))}
+                <div className="flex justify-center mt-4">
+                  <button
+                    type="button"
+                    onClick={handleCommissionClaim}
+                    className="relative shadow-lg rounded-md bg-white px-3.5 py-2.5 max-w-[200px] min-w-[200px] text-sm font-semibold text-gray-900  ring-1 ring-inset ring-accent-light focus:border-accent-light hover:bg-gray-50 flex justify-center items-center"
+                  >
+                    <span
+                      className={`${
+                        isSigingCommission ? "invisible" : "visible"
+                      }`}
+                    >
+                      Claim Commission
+                    </span>
+                    {isSigingCommission && (
+                      <div className="absolute inset-0 flex justify-center items-center">
+                        <div className="animate-spin rounded-full h-6 w-6">
+                          <div className="w-full h-full rounded-full border-2 border-t-accent-light border-r-accent-light  border-l-accent-light"></div>
+                        </div>
+
+                        <span className="pl-2">Processing...</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </dl>
+
+              {/* Second Column */}
+
+              <dl className="w-full space-y-4">
+                {slashingStats.map((item) => (
+                  <div
+                    key={item.name}
+                    className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
+                  >
+                    <dt className="truncate text-sm font-medium text-gray-500">
+                      {item.name}
+                    </dt>
+                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+                      {item.stat}
+                    </dd>
+                  </div>
+                ))}
+                <div className="flex justify-center mt-4">
+                  <button
+                    type="button"
+                    onClick={handleUnjail}
+                    className="relative rounded-md bg-white px-3.5 py-2.5 max-w-[200px] min-w-[200px] text-sm font-semibold text-gray-900 shadow-lg ring-1 ring-inset ring-accent-light focus:border-accent-light hover:bg-gray-50 flex justify-center items-center"
+                  >
+                    <span
+                      className={`${isSigingUnjail ? "invisible" : "visible"}`}
+                    >
+                      Unjail
+                    </span>
+                    {isSigingUnjail && (
+                      <div className="absolute inset-0 flex justify-center items-center">
+                        <div className="animate-spin rounded-full h-6 w-6">
+                          <div className="w-full h-full rounded-full border-2 border-t-accent-light border-r-accent-light  border-l-accent-light"></div>
+                        </div>
+
+                        <span className="pl-2">Processing...</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </dl>
+
+              {/* Third Column: Vertically stacked input fields with scroll */}
+             
+            </div>
+          </div>
+        </div>
+      </div>

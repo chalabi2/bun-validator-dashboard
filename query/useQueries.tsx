@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BigNumber } from "bignumber.js";
 import Long from "long";
 import { parseValidators } from "../utils/staking";
+import { useEffect } from "react";
 
 export const useValidatorsQuery = (chainName: string) => {
   const { lcdQueryClient } = useLcdQueryClient(chainName);
@@ -49,6 +50,12 @@ export const useValidatorsQuery = (chainName: string) => {
     enabled: !!lcdQueryClient,
     staleTime: Infinity,
   });
+
+  useEffect(() => {
+    if (lcdQueryClient) {
+      validatorQuery.refetch();
+    }
+  }, [chainName, lcdQueryClient, validatorQuery]);
 
   return {
     validatorsData: validatorQuery.data,

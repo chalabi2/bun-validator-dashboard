@@ -56,7 +56,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navigation = [
     {
-      name: "Dashboard",
+      name: "Home",
       href: "/",
       icon: HomeIcon,
       current: currentPath === "/",
@@ -78,7 +78,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
-            className="relative z-50 lg:hidden"
+            className="relative z-1 lg:hidden"
             onClose={setSidebarOpen}
           >
             <Transition.Child
@@ -182,7 +182,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 bg-gray-50 lg:flex lg:w-56 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-10 bg-gray-50 lg:flex lg:w-56 lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r  px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
@@ -201,8 +201,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                           onClick={() => router.push(item.href)}
                           className={classNames(
                             item.current
-                              ? "bg-accent-light dark:bg-accent-dark text-white"
-                              : "text-gray-700 hover:bg-gray-300 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100",
+                              ? "bg-accent-light dark:bg-accent-dark cursor-default text-white"
+                              : "text-gray-700 hover:bg-gray-300 dark:text-gray-200 hover:text-gray-900 cursor-pointer dark:hover:text-gray-100",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
@@ -235,8 +235,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <div className="fixed w-screen lg:pl-56">
-          <div className="top-0 z-50 flex h-16 shrink-0 items-center gap-x-4 border-b  bg-gray-100 dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="relative w-screen lg:pl-56">
+          <div className="top-0 z-1 flex h-16 shrink-0 items-center gap-x-4 border-b  bg-gray-100 dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
             <button
               type="button"
               className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300 lg:hidden"
@@ -254,7 +254,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="h-6 w-px bg-gray-900/10 lg:hidden"
               aria-hidden="true"
             />
-            <div className="flex relative items-center z-1 gap-4 ml-auto">
+            <div className="flex relative items-center z-50 gap-4 ml-auto">
               <ChainSelector chains={chains} />
               <WalletSection chainName={chainName} />
               <button
@@ -282,7 +282,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-black/10 focus:outline-none">
+                  <Menu.Items className="absolute right-0 z-50 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-black/10 focus:outline-none">
                     {userNavigation.map((item) => (
                       <Menu.Item key={item.name}>
                         {({ active }) => (
@@ -305,7 +305,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <main className=" z-1 lg:pl-56 mx-auto bg-gray-50 my-auto py-24">
+        <main className="relative z-0 lg:pl-56 mx-auto bg-gray-50 dark:bg-gray-900 my-auto py-24">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
