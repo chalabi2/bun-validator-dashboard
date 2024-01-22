@@ -59,7 +59,7 @@ const ChainSelector: React.FC<{ chains: Chain[] }> = ({ chains }) => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 text-black dark:text-white placeholder-gray-500 focus:outline-none border-none"
+            className="w-full px-4 py-2 text-black dark:text-white placeholder-gray-500 focus:outline-none border-none z-50"
             placeholder="Search Chain"
           />
           <div className="relative py-1 z-50">
@@ -73,7 +73,7 @@ const ChainSelector: React.FC<{ chains: Chain[] }> = ({ chains }) => {
                   <img
                     src={chain.logo_URIs.png}
                     alt=""
-                    className="w-8 h-8 mr-2"
+                    className="w-8 z-50 h-8 mr-2"
                   />
                 )}
                 {chain.pretty_name}

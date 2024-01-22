@@ -1,30 +1,47 @@
 import "../styles/globals.css";
+import "../styles/globals.css";
 import type { AppProps } from "next/app";
 
 import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
+import { ToastContainer } from "react-toastify";
 
 import { TailwindModal } from "../components";
 import { ThemeProvider } from "../contexts/theme";
-
+import { Chain } from "@chain-registry/types";
 import { SignerOptions } from "@cosmos-kit/core";
 import { chains, assets } from "chain-registry";
 import "@interchain-ui/react/styles";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { AminoTypes, SigningStargateClientOptions } from "@cosmjs/stargate";
+import { cosmosAminoConverters, cosmosProtoRegistry } from "interchain-query";
 import { ChainNameProvider } from "../contexts/chainName";
-
+import { Registry } from "@cosmjs/proto-signing";
 import { Layout } from "../components/react/sidebar-header";
 
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
-  // const signerOptions: SignerOptions = {
-  //   signingStargate: () => {
-  //     return getSigningCosmosClientOptions();
-  //   }
-  // };
+  const signerOptions: SignerOptions = {
+    //@ts-ignore
+    signingStargate: (
+      chain: Chain
+    ): SigningStargateClientOptions | undefined => {
+      //@ts-ignore
+      const mergedRegistry = new Registry([...cosmosProtoRegistry]);
+
+      const mergedAminoTypes = new AminoTypes({
+        ...cosmosAminoConverters,
+      });
+
+      return {
+        aminoTypes: mergedAminoTypes,
+        //@ts-ignore
+        registry: mergedRegistry,
+      };
+    },
+  };
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -76,6 +93,8 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         },
       }}
       chains={chains}
+      //@ts-ignore
+      signerOptions={signerOptions}
       assetLists={assets}
       wallets={availableWallets}
       walletConnectOptions={{
@@ -97,11 +116,13 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={true} />
           <ChainNameProvider>
-            <div className="min-h-screen text-black bg-gray-50 dark:bg-gray-900 dark:text-white">
-              <Layout>
+            <ToastContainer position="bottom-right" autoClose={10000} />
+
+            <Layout>
+              <div className="min-h-screen z-1 text-black  dark:text-white">
                 <Component {...pageProps} />
-              </Layout>
-            </div>
+              </div>
+            </Layout>
           </ChainNameProvider>
         </QueryClientProvider>
       </ThemeProvider>

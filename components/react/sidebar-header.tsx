@@ -10,6 +10,7 @@ import {
   XMarkIcon,
   SquaresPlusIcon,
   BanknotesIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 
 import { chains } from "chain-registry";
@@ -61,12 +62,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       current: currentPath === "/",
     },
     {
-      name: "Distribution",
-      href: "/distribution",
-      icon: BanknotesIcon,
-      current: currentPath === "/distribution",
+      name: "Validator",
+      href: "/validator",
+      icon: UserIcon,
+      current: currentPath === "/validator",
     },
-    { name: "Slashing", href: "slashing", icon: XCircleIcon, current: false },
+
     { name: "Governance", href: "governance", icon: ScaleIcon, current: false },
     { name: "Monitor", href: "monitor", icon: SquaresPlusIcon, current: false },
   ];
@@ -140,7 +141,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                             {navigation.map((item) => (
                               <li key={item.name}>
                                 <a
-                                  href={item.href}
+                                  onClick={() => router.push(item.href)}
                                   className={classNames(
                                     item.current
                                       ? "bg-indigo-700 text-white dark:text-black"
@@ -181,7 +182,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 bg-gray-50 lg:flex lg:w-56 lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r  px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
@@ -197,11 +198,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {navigation.map((item) => (
                       <li key={item.name}>
                         <a
-                          href={item.href}
+                          onClick={() => router.push(item.href)}
                           className={classNames(
                             item.current
                               ? "bg-accent-light dark:bg-accent-dark text-white"
-                              : "text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100",
+                              : "text-gray-700 hover:bg-gray-300 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
@@ -253,7 +254,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="h-6 w-px bg-gray-900/10 lg:hidden"
               aria-hidden="true"
             />
-            <div className="flex relative items-center z-50 gap-4 ml-auto">
+            <div className="flex relative items-center z-1 gap-4 ml-auto">
               <ChainSelector chains={chains} />
               <WalletSection chainName={chainName} />
               <button
@@ -304,8 +305,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <main className="lg:pl-56 mx-auto my-auto py-24">
-          <div className="px-4 sm:px-6 mt-32 lg:px-8">{children}</div>
+        <main className=" z-1 lg:pl-56 mx-auto bg-gray-50 my-auto py-24">
+          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
     </>
