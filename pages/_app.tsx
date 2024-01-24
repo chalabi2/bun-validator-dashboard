@@ -117,7 +117,7 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
             <ToastContainer position="bottom-right" autoClose={10000} />
 
             <Layout>
-              <div className="min-h-screen z-1 text-black  dark:text-white">
+              <div className="min-h-screen z-1  text-black  dark:text-white">
                 <Component {...pageProps} />
               </div>
             </Layout>

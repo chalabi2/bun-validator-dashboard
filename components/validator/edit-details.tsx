@@ -17,6 +17,8 @@ interface editDetails {
   chainName: string;
   address: string;
   valoperAddress: string;
+  isLoading: boolean;
+  isError: boolean;
 }
 
 export const EditDetails: React.FC<editDetails> = ({
@@ -25,6 +27,7 @@ export const EditDetails: React.FC<editDetails> = ({
   chainName,
   address,
   valoperAddress,
+  isLoading,
 }) => {
   const [editDetailsState, setEditDetailsState] = useState(validatorDetails);
 
@@ -98,11 +101,22 @@ export const EditDetails: React.FC<editDetails> = ({
   };
 
   type EditDetailsStateKeys = keyof typeof editDetailsState;
+  const loadingPlaceholders = {
+    moniker: "Loading name...",
+    commissionRate: "Loading rate...",
+    identity: "Loading identity...",
+    details: "Loading details...",
+    securityContact: "Loading contact...",
+    website: "Loading website...",
+  };
 
   return (
     <div className="p-8 rounded-lg bg-white shadow-xl mx-auto max-w-xs">
       {Object.entries(validatorDetails).map(([key, placeholder], index) => {
         const detailKey = key as EditDetailsStateKeys;
+        const placeholderText = isLoading
+          ? loadingPlaceholders[detailKey]
+          : placeholder;
         return (
           <div key={index} className="my-4">
             <label
@@ -119,7 +133,7 @@ export const EditDetails: React.FC<editDetails> = ({
                 value={editDetailsState[detailKey]}
                 onChange={handleInputChange}
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder={placeholder}
+                placeholder={placeholderText}
               />
             </div>
           </div>

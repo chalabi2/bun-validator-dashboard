@@ -6,6 +6,76 @@ import Long from "long";
 import { parseValidators } from "../utils/staking";
 import { useEffect } from "react";
 
+export const useValidatorCommissionQuery = (
+  chainName: string,
+  valoperAddress: string
+) => {
+  const { lcdQueryClient } = useLcdQueryClient(chainName);
+
+  const fetchCommission = async () => {
+    if (!lcdQueryClient) {
+      throw new Error("RPC Client not ready");
+    }
+    const commission =
+      await lcdQueryClient.cosmos.distribution.v1beta1.validatorCommission({
+        validatorAddress: valoperAddress,
+      });
+    return commission;
+  };
+
+  const commissionQuery = useQuery({
+    queryKey: ["validators", chainName],
+    queryFn: fetchCommission,
+    enabled: !!lcdQueryClient && !!valoperAddress,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (lcdQueryClient && valoperAddress) {
+      commissionQuery.refetch();
+    }
+  }, [chainName, lcdQueryClient, commissionQuery, valoperAddress]);
+
+  return {
+    commissionData: commissionQuery.data,
+    isCommissionLoading: commissionQuery.isLoading,
+    isCommissionError: commissionQuery.isError,
+  };
+};
+
+export const useSlashingQuery = (chainName: string, valconsAddress: string) => {
+  const { lcdQueryClient } = useLcdQueryClient(chainName);
+
+  const fetchSigningInfo = async () => {
+    if (!lcdQueryClient) {
+      throw new Error("RPC Client not ready");
+    }
+    const slashing = await lcdQueryClient.cosmos.slashing.v1beta1.signingInfo({
+      consAddress: valconsAddress,
+    });
+    return slashing;
+  };
+
+  const slashingQuery = useQuery({
+    queryKey: ["signingInfo", chainName],
+    queryFn: fetchSigningInfo,
+    enabled: !!lcdQueryClient && !!valconsAddress,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (lcdQueryClient && valconsAddress) {
+      slashingQuery.refetch();
+    }
+  }, [chainName, lcdQueryClient, slashingQuery, valconsAddress]);
+
+  return {
+    slashingData: slashingQuery.data,
+    isSlashingLoading: slashingQuery.isLoading,
+    isSlashingError: slashingQuery.isError,
+  };
+};
+
 export const useValidatorsQuery = (chainName: string) => {
   const { lcdQueryClient } = useLcdQueryClient(chainName);
 

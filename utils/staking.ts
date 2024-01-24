@@ -201,3 +201,37 @@ function wordArrayToUint8Array(wordArray: CryptoJS.lib.WordArray) {
 
   return u8;
 }
+
+export const convertChainName = (
+  chainName: string,
+) => {
+  if (chainName.endsWith('testnet')) {
+    return chainName.replace(
+      'testnet',
+      '-testnet',
+    );
+  }
+
+  switch (chainName) {
+    case 'cosmoshub':
+      return 'cosmos';
+    case 'assetmantle':
+      return 'asset-mantle';
+      case 'omniflixhub':
+        return 'omniflix';
+    case 'cryptoorgchain':
+      return 'crypto-org';
+    case 'dig':
+      return 'dig-chain';
+    case 'gravitybridge':
+      return 'gravity-bridge';
+    case 'kichain':
+      return 'ki-chain';
+    case 'oraichain':
+      return 'orai-chain';
+    case 'terra':
+      return 'terra-classic';
+    default:
+      return chainName;
+  }
+};

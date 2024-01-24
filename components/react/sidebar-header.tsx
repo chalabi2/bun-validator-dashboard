@@ -182,7 +182,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-10 bg-gray-50 lg:flex lg:w-56 lg:flex-col">
+        <div className="hidden overflow-y-hidden lg:fixed lg:inset-y-0 lg:z-10 bg-gray-50 lg:flex lg:w-56 lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r  px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
@@ -305,7 +305,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <main className="relative z-0 lg:pl-56 mx-auto bg-gray-50 dark:bg-gray-900 my-auto py-24">
+        <main className="relative z-0 lg:pl-56 mx-auto bg-gray-50 dark:bg-gray-900 max-h-screen overflow-hidden py-24">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
